@@ -15,7 +15,9 @@ var Sanstream = {
 
   svg: null,
 
-  getNormalDeviation: d3.random.normal(0,7),
+  getHighDeviation: d3.random.normal(40,20),
+  getNormalDeviation: d3.random.normal(20,10),
+  getLowDeviation: d3.random.normal(3,1),
   stepSize: 40,
   numOfLineSegments: 2000,
 
@@ -33,16 +35,23 @@ var Sanstream = {
         'height': '100%',
         'width': '100%',
         'position': 'absolute',
-        'z-index': 1
+        'z-index': 1,
+        'background-color': 'black'
       });
 
     this.mainSequence = this.generateGuidingSequence();
     var main = this.createStream('rgba(0,0,255,0.5)',this.mainSequence);
     main.style({'stroke-width':0});
 
-    this.stream.red = this.createStream('#FF7600', this.generateSequence());
-    this.stream.orange = this.createStream('#FF9800', this.generateSequence());
-    this.stream.yellow = this.createStream('#FFBC00', this.generateSequence());
+    this.createStream('#FF7600', this.generateSequence(this.getNormalDeviation));
+    this.createStream('#FF9800', this.generateSequence(this.getNormalDeviation));
+    this.createStream('rgba(255, 180, 0, 0.6)', this.generateSequence(this.getNormalDeviation));
+
+    this.createStream('rgba(255,118,0,0.5)', this.generateSequence(this.getNormalDeviation));
+    this.createStream('rgba(255, 152, 0, 0.6)', this.generateSequence(this.getHighDeviation));
+
+    this.createStream('rgba(255, 180, 0, 0.6)', this.generateSequence(this.getHighDeviation));
+
   },
 
   randomize: function (amplitude) {
@@ -50,7 +59,7 @@ var Sanstream = {
   },
 
   randomAngle: function () {
-    return (Math.random() -0.5 ) * 55 * 2;
+    return (Math.random() -0.5 ) * 10;
   },
 
   rotate: function (vector, degrees) {
@@ -62,20 +71,23 @@ var Sanstream = {
     return result;
   },
 
-  generateSequence: function () {
+  generateSequence: function (deviation) {
 
     var sequence = this.mainSequence.map(function (item, index) {
 
-        if(index % 2 !== 0){ // align to the main sequence:
+        //if(index % 6 !== 0){ // align to the main sequence:
 
           return new THREE.Vector2(
-            item.x + this.getNormalDeviation(item.x),
-            item.y + this.getNormalDeviation(item.y));
-        }
-        else{
-
-          return new THREE.Vector2(item.x, item.y);
-        }
+            item.x + deviation(item.x),
+            item.y + deviation(item.y));
+        // }
+        // else{
+        //
+        //   return new THREE.Vector2(
+        //     item.x + this.getLowDeviation(item.x),
+        //     item.y + this.getLowDeviation(item.y)
+        //   );
+        // }
     }, this);
 
     console.debug(sequence);
