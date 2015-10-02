@@ -75,19 +75,16 @@ var Sanstream = {
 
     var sequence = this.mainSequence.map(function (item, index) {
 
-        //if(index % 6 !== 0){ // align to the main sequence:
+      var vector =  new THREE.Vector2(
+        item.x + deviation(item.x),
+        item.y + deviation(item.y)
+      );
 
-          return new THREE.Vector2(
-            item.x + deviation(item.x),
-            item.y + deviation(item.y));
-        // }
-        // else{
-        //
-        //   return new THREE.Vector2(
-        //     item.x + this.getLowDeviation(item.x),
-        //     item.y + this.getLowDeviation(item.y)
-        //   );
-        // }
+      if(index % 7 !== 0){ //forcebly move away from the main sequence at random:
+        vector.x += this.randomize(10);
+        vector.y += this.randomize(10);
+      }
+      return vector;
     }, this);
 
     console.debug(sequence);
