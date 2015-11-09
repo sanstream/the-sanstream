@@ -1,0 +1,29 @@
+/**
+ * Colour defintions:
+ */
+
+$colour-redish-orange:      #FFEE00;
+$colour-orange:             #FF7600;
+$colour-yellow:             #FF9800;
+
+/**
+ * Styles:
+ */
+body {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+
+  > svg {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+    background-color: black;
+
+    path {
+      stroke-width: 2;
+      fill: none;
+    }
+  }
+}

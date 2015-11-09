@@ -1,0 +1,21 @@
+/**
+ * Colour defintions:
+ */
+/**
+ * Styles:
+ */
+body {
+  height: 100%;
+  width: 100%;
+  position: absolute; }
+  body > svg {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+    background-color: black; }
+    body > svg path {
+      stroke-width: 2;
+      fill: none; }
+
+/*# sourceMappingURL=the-sanstream.css.map */
