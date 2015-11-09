@@ -17,5 +17,7 @@ body {
     body > svg path {
       stroke-width: 2;
       fill: none; }
+    body > svg path.orange {
+      stroke: #FF7600; }
 
 /*# sourceMappingURL=the-sanstream.css.map */

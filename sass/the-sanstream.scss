@@ -25,5 +25,8 @@ body {
       stroke-width: 2;
       fill: none;
     }
+    path.orange {
+      stroke: $colour-orange;
+    }
   }
 }
