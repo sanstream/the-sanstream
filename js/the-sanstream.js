@@ -13,10 +13,18 @@ var Sanstream = {
   },
   numOfIterations: 400,
   addVector: new THREE.Vector2(10,10),
+  donorVector: new THREE.Vector2(0,0),
+  didATwist: false,
+
+  clientDims: {
+    width: null,
+    height: null
+  },
 
   init: function () {
     this.svg = d3.select('body').append('svg');
-
+    this.clientDims.width = document.getWidth();
+    this.clientDims.height = document.getHeight();
     this.setUpBasePath();
   },
 
@@ -37,17 +45,36 @@ var Sanstream = {
       }
       else {
         sequence[index] = sequence[index-1].clone();
-        //sequence[index].add(this.addVector);
-
-        var donorVector = sequence[0].clone();
-        this.rotate(donorVector, (Math.random() - 0.5) * 100);
+        var donorVector = sequence[index].clone().setLength(20);
+        var courseDir = (Math.random() - 0.5) * 100;
+        this.rotate(donorVector, courseDir);
         sequence[index].add(donorVector);
-        //sequence[index].x += (Math.random() - 0.5) * 30;
-        //sequence[index].y += (Math.random() - 0.5) * 30;
+
+        this.courseCorrect(sequence[index], donorVector, courseDir);
       }
     };
 
     return sequence;
+  },
+
+  courseCorrect: function (coordinate , donorVector, courseDir) {
+
+
+    if(coordinate.x < 0 || coordinate.x > this.clientDims.width){
+      coordinate.sub(donorVector);
+      this.rotate(donorVector, -courseDir);
+    }
+
+    if(coordinate.y < 0){
+      this.donorVector.y =+ 20;
+    }
+    else if(coordinate.y > this.clientDims.height) {
+      this.donorVector.y =- 20;
+    }
+
+    coordinate.add(this.donorVector);
+    this.donorVector.setX(0);
+    this.donorVector.setY(0);
   },
 
   rotate: function (vector, degrees) {
