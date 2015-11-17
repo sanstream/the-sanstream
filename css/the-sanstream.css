@@ -14,10 +14,9 @@ body {
     position: absolute;
     z-index: 1;
     background-color: black; }
-    body > svg path {
+    body > svg g.orange path {
       stroke-width: 2;
-      fill: none; }
-    body > svg path.orange {
+      fill: none;
       stroke: #FF7600; }
 
 /*# sourceMappingURL=the-sanstream.css.map */

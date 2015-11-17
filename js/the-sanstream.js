@@ -30,8 +30,8 @@ var Sanstream = {
 
   setUpBasePath: function () {
     var randomSequence = this.createRandomSequence();
-    var dimString = this.createDimString(randomSequence);
-    this.insertPath(dimString);
+    var dimStrings = this.createDimStrings(randomSequence);
+    this.insertPaths(dimStrings);
   },
 
 
@@ -48,9 +48,9 @@ var Sanstream = {
         var donorVector = sequence[index].clone().setLength(20);
         var courseDir = (Math.random() - 0.5) * 100;
         this.rotate(donorVector, courseDir);
-        sequence[index].add(donorVector);
-
         this.courseCorrect(sequence[index], donorVector, courseDir);
+
+        sequence[index].add(donorVector);
       }
     };
 
@@ -84,19 +84,26 @@ var Sanstream = {
   },
 
 
-  createDimString: function (coorSequence) {
-    return coorSequence.map(function (coorSet) {
-      return " " + coorSet.x + "," + coorSet.y;
-    }).join(" ");
+  createDimStrings: function (coorSequence) {
+    var dimStrings = coorSequence.map(function (coorSet, index) {
+      if(index < coorSequence.length - 1){
+        return coorSet.x + "," + coorSet.y + " "
+          + coorSequence[index+1].x + "," + coorSequence[index+1].y;
+      }
+      return "";
+    });
+    dimStrings.splice(coorSequence.length-1, 1);
+    return dimStrings;
   },
 
-  insertPath: function (dimString) {
-    this.svg.append('path')
-      .classed('medium-width', true)
-      .classed('orange', true)
-      .attr('d', function () {
-        return "M" + dimString;
-      }
-    );
+  insertPaths: function (dimStrings) {
+
+    var group = this.svg.append('g').classed('orange', true);
+    group.selectAll('path').data(dimStrings).enter()
+      .append('path')
+      .attr('d', function (dimString) {
+        console.debug(dimString);
+          return "M" + dimString;
+      });
   }
 }

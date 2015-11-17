@@ -21,12 +21,12 @@ body {
     z-index: 1;
     background-color: black;
 
-    path {
-      stroke-width: 2;
-      fill: none;
-    }
-    path.orange {
-      stroke: $colour-orange;
+    g.orange {
+      path {
+        stroke-width: 2;
+        fill: none;
+        stroke: $colour-orange;
+      }
     }
   }
 }
