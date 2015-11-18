@@ -21,6 +21,12 @@ body {
     z-index: 1;
     background-color: black;
 
+    g.guiding-circles {
+      circle {
+        fill: rgba(0, 182, 255, 0.7);
+      }
+    }
+
     g.orange {
       path {
         stroke-width: 2;

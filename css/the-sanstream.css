@@ -14,6 +14,8 @@ body {
     position: absolute;
     z-index: 1;
     background-color: black; }
+    body > svg g.guiding-circles circle {
+      fill: rgba(0, 182, 255, 0.7); }
     body > svg g.orange path {
       stroke-width: 2;
       fill: none;

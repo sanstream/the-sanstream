@@ -7,13 +7,9 @@ var Sanstream = {
 
   mainSequence: null,
   svg: null,
-  startAt: {
-    x: 20,
-    y: 20
-  },
-  numOfIterations: 400,
-  addVector: new THREE.Vector2(10,10),
-  donorVector: new THREE.Vector2(0,0),
+  numOfIterations: 300,
+  segmentLength : 20,
+  donorVector: new THREE.Vector2(20, 20).setLength(20),
   didATwist: false,
 
   clientDims: {
@@ -30,80 +26,78 @@ var Sanstream = {
 
   setUpBasePath: function () {
     var randomSequence = this.createRandomSequence();
-    var dimStrings = this.createDimStrings(randomSequence);
-    this.insertPaths(dimStrings);
+    this.insertPaths(randomSequence);
+    this.insertGuidingCircles(randomSequence);
   },
 
 
   createRandomSequence: function () {
     var sequence = [];
     sequence.length = this.numOfIterations;
-    for(var index = 0; index < sequence.length; index++) {
+    for(var i = 0; i < sequence.length; i++) {
 
-      if(index === 0){
-        sequence[index] = new THREE.Vector2(this.startAt.x, this.startAt.y);
-      }
-      else {
-        sequence[index] = sequence[index-1].clone();
-        var donorVector = sequence[index].clone().setLength(20);
-        var courseDir = (Math.random() - 0.5) * 100;
-        this.rotate(donorVector, courseDir);
-        this.courseCorrect(sequence[index], donorVector, courseDir);
+      sequence[i] = {
+        vector: this.donorVector.clone(),
+        position: (i>0)? sequence[i-1].position.clone() : new THREE.Vector2(0,0)
+      };
+      if(i > 0) sequence[i].position.add(sequence[i-1].vector);
 
-        sequence[index].add(donorVector);
-      }
+      var courseDir = (Math.random() - 0.5) * 100;
+      courseDir = this.courseCorrect(sequence[i].vector, courseDir);
+      this.rotate(sequence[i].vector, courseDir);
     };
 
     return sequence;
   },
 
-  courseCorrect: function (coordinate , donorVector, courseDir) {
+  courseCorrect: function (coordinate, courseDir) {
 
-
-    if(coordinate.x < 0 || coordinate.x > this.clientDims.width){
-      coordinate.sub(donorVector);
-      this.rotate(donorVector, -courseDir);
+    if(coordinate.x < 0){
+      return -courseDir;
+    }
+    else if (coordinate.x > this.clientDims.width) {
+      return -courseDir;
     }
 
     if(coordinate.y < 0){
-      this.donorVector.y =+ 20;
+      return -courseDir;
     }
     else if(coordinate.y > this.clientDims.height) {
-      this.donorVector.y =- 20;
+      return -courseDir;
     }
-
-    coordinate.add(this.donorVector);
-    this.donorVector.setX(0);
-    this.donorVector.setY(0);
+    return courseDir;
   },
 
   rotate: function (vector, degrees) {
-    radians = (degrees/360) * 2 * Math.PI;
-    vector.setX( vector.x * Math.cos(radians) - vector.y * Math.sin(radians));
-    vector.setY( vector.x * Math.sin(radians) + vector.y * Math.cos(radians));
+    radians = ((degrees % 360)/360) * 2 * Math.PI;
+    vector.setX(vector.x * Math.cos(radians) - vector.y * Math.sin(radians));
+    vector.setY(vector.x * Math.sin(radians) + vector.y * Math.cos(radians));
   },
 
 
-  createDimStrings: function (coorSequence) {
-    var dimStrings = coorSequence.map(function (coorSet, index) {
-      if(index < coorSequence.length - 1){
-        return coorSet.x + "," + coorSet.y + " "
-          + coorSequence[index+1].x + "," + coorSequence[index+1].y;
-      }
-      return "";
-    });
-    dimStrings.splice(coorSequence.length-1, 1);
-    return dimStrings;
-  },
-
-  insertPaths: function (dimStrings) {
+  insertPaths: function (coorSequence) {
 
     var group = this.svg.append('g').classed('orange', true);
-    group.selectAll('path').data(dimStrings).enter()
+    group.selectAll('path').data(coorSequence).enter()
       .append('path')
-      .attr('d', function (dimString) {
-        console.debug(dimString);
-          return "M" + dimString;
+      .attr('d', function (coor) {
+        return "M 0,0 " + coor.vector.x + "," + coor.vector.y;
+      })
+      .attr('transform', function (coor, i) {
+        return "translate(" + coor.position.x + ", " + coor.position.y + ")";
+      });
+  },
+
+  insertGuidingCircles: function (coorSequence) {
+    var cirleGroup = this.svg.append('g').classed('guiding-circles', true);
+    cirleGroup.selectAll('circle').data(coorSequence).enter()
+      .append('circle')
+      .attr('r', this.segmentLength)
+      .attr('cx', function (coor) {
+          return coor.position.x;
+      })
+      .attr('cy', function (coor) {
+          return coor.position.y;
       });
   }
 }
