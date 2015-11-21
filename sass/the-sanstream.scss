@@ -2,9 +2,9 @@
  * Colour defintions:
  */
 
-$colour-reddish-orange:      #ff6300;
+$colour-reddish-orange:     #ff6300;
 $colour-orange:             #FF7600;
-$colour-yellow:             #FF9800;
+$colour-yellow-orange:      #FF9800;
 $colour-black:              #000000;
 
 /**
@@ -28,48 +28,41 @@ body {
       }
     }
 
-    g > path.glow {
-      animation-name: glow;
-      animation-duration: 25s;
-      //animation-iteration-count: 10;
-      animation-direction:normal;
-      animation-timing-function: ease-out;
-      //animation-fill-mode: forwards;
+    @mixin defineColour($colourName,$colour){
+      g.#{$colourName} > path.glow {
+        animation-name: glow#{$colourName};
+        animation-duration: 25s;
+        //animation-iteration-count: 10;
+        animation-direction:normal;
+        animation-timing-function: ease-out;
+        //animation-fill-mode: forwards;
+      }
+
+      @keyframes glow#{$colourName}{
+        0% {
+          stroke: $colour-black;
+        }
+        20% {
+          stroke: $colour;
+        }
+
+        50% {
+          stroke: $colour;
+        }
+
+        100% {
+          stroke: $colour-black;
+        }
+      }
     }
 
-    @keyframes glow {
-      0% {
-        stroke: $colour-black;
-      }
-      20% {
-        stroke: $colour-orange;
-      }
+    @include defineColour('orange', $colour-orange);
+    @include defineColour('yellow-orange', $colour-yellow-orange);
+    @include defineColour('reddish-orange', $colour-reddish-orange);
 
-      50% {
-        stroke: $colour-orange;
-      }
-
-      100% {
-        stroke: $colour-black;
-      }
-    }
-
-    g.orange > path {
+    g > path {
       stroke-width: 2;
       fill: none;
-      //stroke: $colour-orange;
-    }
-
-    g.reddish-orange > path {
-      stroke-width: 2;
-      fill: none;
-      //stroke: $colour-reddish-orange;
-    }
-
-    g.yellow-orange > path {
-      stroke-width: 2;
-      fill: none;
-      //stroke: $colour-yellow;
     }
   }
 }

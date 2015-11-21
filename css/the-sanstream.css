@@ -14,12 +14,12 @@ body {
     position: absolute;
     z-index: 1;
     background-color: black; }
-    body > svg g > path.glow {
-      animation-name: glow;
+    body > svg g.orange > path.glow {
+      animation-name: gloworange;
       animation-duration: 25s;
       animation-direction: normal;
       animation-timing-function: ease-out; }
-@keyframes glow {
+@keyframes gloworange {
   0% {
     stroke: #000000; }
   20% {
@@ -28,13 +28,35 @@ body {
     stroke: #FF7600; }
   100% {
     stroke: #000000; } }
-    body > svg g.orange > path {
-      stroke-width: 2;
-      fill: none; }
-    body > svg g.reddish-orange > path {
-      stroke-width: 2;
-      fill: none; }
-    body > svg g.yellow-orange > path {
+    body > svg g.yellow-orange > path.glow {
+      animation-name: glowyellow-orange;
+      animation-duration: 25s;
+      animation-direction: normal;
+      animation-timing-function: ease-out; }
+@keyframes glowyellow-orange {
+  0% {
+    stroke: #000000; }
+  20% {
+    stroke: #FF9800; }
+  50% {
+    stroke: #FF9800; }
+  100% {
+    stroke: #000000; } }
+    body > svg g.reddish-orange > path.glow {
+      animation-name: glowreddish-orange;
+      animation-duration: 25s;
+      animation-direction: normal;
+      animation-timing-function: ease-out; }
+@keyframes glowreddish-orange {
+  0% {
+    stroke: #000000; }
+  20% {
+    stroke: #ff6300; }
+  50% {
+    stroke: #ff6300; }
+  100% {
+    stroke: #000000; } }
+    body > svg g > path {
       stroke-width: 2;
       fill: none; }
 
