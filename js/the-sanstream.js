@@ -41,17 +41,19 @@ Sanstream.prototype.createRandomSequence = function () {
   "use strict";
   var sequence = [];
   sequence.length = this.numOfIterations;
-  for(var i = 0; i < sequence.length; i++) {
 
-    sequence[i] = {
-      vector: this.donorVector.clone(),
-      position: (i>0)? sequence[i-1].position.clone() : new THREE.Vector2(this.padding + 3,this.padding + 3)
-    };
-    if(i > 0) sequence[i].position.add(sequence[i-1].vector);
+  for(var i = 0; i < sequence.length; i++) {
+    var pathObject = new PathObject(
+      this.donorVector.clone()
+      , (i > 0)? sequence[i-1].position.clone() : new THREE.Vector2(this.padding + 3,this.padding + 3)
+    );
+    if(i > 0) pathObject.position.add(sequence[i-1].vector);
 
     var courseDir = (Math.random() - 0.5) * 100;
-    this.courseCorrect(sequence[i]);
-    this.rotate(sequence[i].vector, courseDir);
+    this.courseCorrect(pathObject);
+    this.rotate(pathObject.vector, courseDir);
+
+    sequence[i] = pathObject;
   };
 
   return sequence;
