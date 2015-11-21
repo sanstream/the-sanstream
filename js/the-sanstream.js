@@ -7,8 +7,9 @@ var Sanstream = {
 
   mainSequence: null,
   svg: null,
-  numOfIterations: 300,
+  numOfIterations: 500,
   segmentLength : 20,
+  padding: 70,
   donorVector: new THREE.Vector2(20, 20).setLength(20),
   didATwist: false,
 
@@ -17,28 +18,40 @@ var Sanstream = {
     height: null
   },
 
+  /**
+   * Constructor
+   */
   init: function () {
+    "use strict";
     this.svg = d3.select('body').append('svg');
     this.clientDims.width = document.getWidth();
     this.clientDims.height = document.getHeight();
     this.setUpBasePath();
   },
 
+  /**
+   * Sets up the base path by which all streams use as a guide.
+   */
   setUpBasePath: function () {
+    "use strict";
     var randomSequence = this.createRandomSequence();
     this.insertPaths(randomSequence);
-    this.insertGuidingCircles(randomSequence);
+    //this.insertGuidingCircles(randomSequence);
   },
 
-
+  /**
+   * Creates a random sequence of coordinates with certain ammount of jitter to them.
+   * @return {Array} An array of @link{PathObject}s.
+   */
   createRandomSequence: function () {
+    "use strict";
     var sequence = [];
     sequence.length = this.numOfIterations;
     for(var i = 0; i < sequence.length; i++) {
 
       sequence[i] = {
         vector: this.donorVector.clone(),
-        position: (i>0)? sequence[i-1].position.clone() : new THREE.Vector2(0,0)
+        position: (i>0)? sequence[i-1].position.clone() : new THREE.Vector2(this.padding + 3,this.padding + 3)
       };
       if(i > 0) sequence[i].position.add(sequence[i-1].vector);
 
@@ -50,36 +63,46 @@ var Sanstream = {
     return sequence;
   },
 
-  courseCorrect: function (coordinate, courseDir) {
+  /**
+   * Course correct when the stream hits a border.
+   * @param  {Object} coordinate Object containing the directional vector and the position vector.
+   * @return {void}
+   */
+  courseCorrect: function (coordinate) {
+    "use strict";
+    if(coordinate.position.x < this.padding ||
+      coordinate.position.x > this.clientDims.width - this.padding) {
+      coordinate.vector.x = -coordinate.vector.x; // set coordinate to the inverse coordinate
+      this.donorVector.x = -this.donorVector.x; // update the donor vector with the new general direction.
+    }
 
-    if(coordinate.position.x < 0){
-      coordinate.vector.x = -coordinate.vector.x;
-      this.donorVector.x = -this.donorVector.x;
-    }
-    else if (coordinate.position.x > this.clientDims.width) {
-      coordinate.vector.x = -coordinate.vector.x;
-      this.donorVector.x = -this.donorVector.x;
-    }
-
-    if(coordinate.position.y < 0){
-      coordinate.vector.y = -coordinate.vector.y;
-      this.donorVector.y = -this.donorVector.y;
-    }
-    else if(coordinate.position.y > this.clientDims.height) {
-      coordinate.vector.y = -coordinate.vector.y;
-      this.donorVector.y = -this.donorVector.y;
+    if(coordinate.position.y < this.padding ||
+      coordinate.position.y > this.clientDims.height - this.padding) {
+      coordinate.vector.y = -coordinate.vector.y; // set coordinate to the inverse coordinate
+      this.donorVector.y = -this.donorVector.y; // update the donor vector with the new general direction.
     }
   },
 
+  /**
+   * Util method for rotating a vector by a given amount of degrees.
+   * @param  {Object} vector  Any object that at least has x and y properties.
+   * @param  {Number} degrees Any value, because all values are normalized to 0 till 360.
+   * @return {void}
+   */
   rotate: function (vector, degrees) {
-    radians = ((degrees % 360)/360) * 2 * Math.PI;
+    "use strict";
+    var radians = ((degrees % 360)/360) * 2 * Math.PI;
     vector.setX(vector.x * Math.cos(radians) - vector.y * Math.sin(radians));
     vector.setY(vector.x * Math.sin(radians) + vector.y * Math.cos(radians));
   },
 
-
+  /**
+   * Builds and insert a path into the document.
+   * @param  {Array} coorSequence An array of @link{PathObject}
+   * @return {void}
+   */
   insertPaths: function (coorSequence) {
-
+    "use strict";
     var group = this.svg.append('g').classed('orange', true);
     group.selectAll('path').data(coorSequence).enter()
       .append('path')
@@ -91,7 +114,14 @@ var Sanstream = {
       });
   },
 
+  /**
+   * Builds and inserts circles into the document.
+   * Used a debug tool.
+   * @param  {Array} coorSequence An array of @link{PathObject}
+   * @return {void}
+   */
   insertGuidingCircles: function (coorSequence) {
+    "use strict";
     var cirleGroup = this.svg.append('g').classed('guiding-circles', true);
     cirleGroup.selectAll('circle').data(coorSequence).enter()
       .append('circle')
@@ -103,4 +133,4 @@ var Sanstream = {
           return coor.position.y;
       });
   }
-}
+};
