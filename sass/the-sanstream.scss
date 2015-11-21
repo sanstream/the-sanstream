@@ -2,9 +2,10 @@
  * Colour defintions:
  */
 
-$colour-redish-orange:      #FFEE00;
+$colour-reddish-orange:      #ff6300;
 $colour-orange:             #FF7600;
 $colour-yellow:             #FF9800;
+$colour-black:              #000000;
 
 /**
  * Styles:
@@ -23,16 +24,52 @@ body {
 
     g.guiding-circles {
       circle {
-        fill: rgba(0, 182, 255, 0.7);
+        //fill: rgba(0, 182, 255, 0.7);
       }
     }
 
-    g.orange {
-      path {
-        stroke-width: 2;
-        fill: none;
+    g > path.glow {
+      animation-name: glow;
+      animation-duration: 25s;
+      //animation-iteration-count: 10;
+      animation-direction:normal;
+      animation-timing-function: ease-out;
+      //animation-fill-mode: forwards;
+    }
+
+    @keyframes glow {
+      0% {
+        stroke: $colour-black;
+      }
+      20% {
         stroke: $colour-orange;
       }
+
+      50% {
+        stroke: $colour-orange;
+      }
+
+      100% {
+        stroke: $colour-black;
+      }
+    }
+
+    g.orange > path {
+      stroke-width: 2;
+      fill: none;
+      //stroke: $colour-orange;
+    }
+
+    g.reddish-orange > path {
+      stroke-width: 2;
+      fill: none;
+      //stroke: $colour-reddish-orange;
+    }
+
+    g.yellow-orange > path {
+      stroke-width: 2;
+      fill: none;
+      //stroke: $colour-yellow;
     }
   }
 }

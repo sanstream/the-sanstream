@@ -14,11 +14,28 @@ body {
     position: absolute;
     z-index: 1;
     background-color: black; }
-    body > svg g.guiding-circles circle {
-      fill: rgba(0, 182, 255, 0.7); }
-    body > svg g.orange path {
+    body > svg g > path.glow {
+      animation-name: glow;
+      animation-duration: 25s;
+      animation-direction: normal;
+      animation-timing-function: ease-out; }
+@keyframes glow {
+  0% {
+    stroke: #000000; }
+  20% {
+    stroke: #FF7600; }
+  50% {
+    stroke: #FF7600; }
+  100% {
+    stroke: #000000; } }
+    body > svg g.orange > path {
       stroke-width: 2;
-      fill: none;
-      stroke: #FF7600; }
+      fill: none; }
+    body > svg g.reddish-orange > path {
+      stroke-width: 2;
+      fill: none; }
+    body > svg g.yellow-orange > path {
+      stroke-width: 2;
+      fill: none; }
 
 /*# sourceMappingURL=the-sanstream.css.map */
