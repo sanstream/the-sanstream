@@ -1,0 +1,24 @@
+/**
+ * Colour defintions:
+ */
+/**
+ * Styles:
+ */
+body {
+  height: 100%;
+  width: 100%;
+  position: absolute; }
+  body > svg {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+    background-color: black; }
+    body > svg g.guiding-circles circle {
+      fill: rgba(0, 182, 255, 0.7); }
+    body > svg g.orange path {
+      stroke-width: 2;
+      fill: none;
+      stroke: #FF7600; }
+
+/*# sourceMappingURL=the-sanstream.css.map */

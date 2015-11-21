@@ -5,128 +5,99 @@ $(document).addEvent('domready', function () {
 
 var Sanstream = {
 
-  stream : {
-      red: null,
-      orange: null,
-      yellow: null
-  },
-
   mainSequence: null,
-
   svg: null,
+  numOfIterations: 300,
+  segmentLength : 20,
+  donorVector: new THREE.Vector2(20, 20).setLength(20),
+  didATwist: false,
 
-  getHighDeviation: d3.random.normal(40,20),
-  getNormalDeviation: d3.random.normal(20,10),
-  getLowDeviation: d3.random.normal(3,1),
-  stepSize: 40,
-  numOfLineSegments: 2000,
+  clientDims: {
+    width: null,
+    height: null
+  },
 
   init: function () {
-
-    d3.select('body')
-      .style({
-        'height': '100%',
-        'width': '100%',
-        'position': 'absolute'
-    });
-
-    this.svg = d3.select('body').append('svg')
-      .style({
-        'height': '100%',
-        'width': '100%',
-        'position': 'absolute',
-        'z-index': 1,
-        'background-color': 'black'
-      });
-
-    this.mainSequence = this.generateGuidingSequence();
-    var main = this.createStream('rgba(0,0,255,0.5)',this.mainSequence);
-    main.style({'stroke-width':0});
-
-    this.createStream('#FF7600', this.generateSequence(this.getNormalDeviation));
-    this.createStream('#FF9800', this.generateSequence(this.getNormalDeviation));
-    this.createStream('rgba(255, 180, 0, 0.6)', this.generateSequence(this.getNormalDeviation));
-
-    this.createStream('rgba(255,118,0,0.5)', this.generateSequence(this.getNormalDeviation));
-    this.createStream('rgba(255, 152, 0, 0.6)', this.generateSequence(this.getHighDeviation));
-
-    this.createStream('rgba(255, 180, 0, 0.6)', this.generateSequence(this.getHighDeviation));
-
+    this.svg = d3.select('body').append('svg');
+    this.clientDims.width = document.getWidth();
+    this.clientDims.height = document.getHeight();
+    this.setUpBasePath();
   },
 
-  randomize: function (amplitude) {
-      return (Math.random()) * amplitude;
+  setUpBasePath: function () {
+    var randomSequence = this.createRandomSequence();
+    this.insertPaths(randomSequence);
+    this.insertGuidingCircles(randomSequence);
   },
 
-  randomAngle: function () {
-    return (Math.random() -0.5 ) * 10;
+
+  createRandomSequence: function () {
+    var sequence = [];
+    sequence.length = this.numOfIterations;
+    for(var i = 0; i < sequence.length; i++) {
+
+      sequence[i] = {
+        vector: this.donorVector.clone(),
+        position: (i>0)? sequence[i-1].position.clone() : new THREE.Vector2(0,0)
+      };
+      if(i > 0) sequence[i].position.add(sequence[i-1].vector);
+
+      var courseDir = (Math.random() - 0.5) * 100;
+      courseDir = this.courseCorrect(sequence[i].vector, courseDir);
+      this.rotate(sequence[i].vector, courseDir);
+    };
+
+    return sequence;
+  },
+
+  courseCorrect: function (coordinate, courseDir) {
+
+    if(coordinate.x < 0){
+      return -courseDir;
+    }
+    else if (coordinate.x > this.clientDims.width) {
+      return -courseDir;
+    }
+
+    if(coordinate.y < 0){
+      return -courseDir;
+    }
+    else if(coordinate.y > this.clientDims.height) {
+      return -courseDir;
+    }
+    return courseDir;
   },
 
   rotate: function (vector, degrees) {
-
-    radians = (degrees/360) * 2 * Math.PI;
-    result = new THREE.Vector2();
-    result.setX( vector.x * Math.cos(radians) - vector.y * Math.sin(radians));
-    result.setY( vector.x * Math.sin(radians) + vector.y * Math.cos(radians));
-    return result;
+    radians = ((degrees % 360)/360) * 2 * Math.PI;
+    vector.setX(vector.x * Math.cos(radians) - vector.y * Math.sin(radians));
+    vector.setY(vector.x * Math.sin(radians) + vector.y * Math.cos(radians));
   },
 
-  generateSequence: function (deviation) {
 
-    var sequence = this.mainSequence.map(function (item, index) {
+  insertPaths: function (coorSequence) {
 
-      var vector =  new THREE.Vector2(
-        item.x + deviation(item.x),
-        item.y + deviation(item.y)
-      );
-
-      if(index % 7 !== 0){ //forcebly move away from the main sequence at random:
-        vector.x += this.randomize(10);
-        vector.y += this.randomize(10);
-      }
-      return vector;
-    }, this);
-
-    console.debug(sequence);
-    return sequence;
-  },
-
-  generateGuidingSequence: function () {
-
-    // Building up a random sequence:
-    var sequence = d3.range(0, this.numOfLineSegments,this.stepSize).map(function (item, index) {
-
-      var vector = new THREE.Vector2(this.randomize(this.stepSize), this.randomize(this.stepSize));
-      vector = this.rotate(vector, this.randomAngle());
-      return vector;
-
-    }, this);
-
-    // The sequence are absolute positions, so the position vectors needs to increase to:
-    sequence.forEach(function (vector, index){
-
-      if (index > 0){
-        sequence[index] = vector.add(sequence[index-1]);
-      }
-    }, this)
-
-    return sequence;
-  },
-
-  createStream: function (color, randomCoorSequence) {
-
-    var coordinatestring = randomCoorSequence.map(function (coorSet) {
-      return " " + coorSet.x + "," + coorSet.y;
-    }).join(" ");
-
-    return this.svg.append('path')
-      .style({
-        'stroke': color,
-        'stroke-width': 2,
-        'fill': 'none'
+    var group = this.svg.append('g').classed('orange', true);
+    group.selectAll('path').data(coorSequence).enter()
+      .append('path')
+      .attr('d', function (coor) {
+        return "M 0,0 " + coor.vector.x + "," + coor.vector.y;
       })
-      .attr('d', function () {
-        return "M" + coordinatestring;
+      .attr('transform', function (coor, i) {
+        return "translate(" + coor.position.x + ", " + coor.position.y + ")";
       });
   },
+
+  insertGuidingCircles: function (coorSequence) {
+    var cirleGroup = this.svg.append('g').classed('guiding-circles', true);
+    cirleGroup.selectAll('circle').data(coorSequence).enter()
+      .append('circle')
+      .attr('r', this.segmentLength)
+      .attr('cx', function (coor) {
+          return coor.position.x;
+      })
+      .attr('cy', function (coor) {
+          return coor.position.y;
+      });
+  }
 }
