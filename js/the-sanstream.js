@@ -43,7 +43,7 @@ var Sanstream = {
       if(i > 0) sequence[i].position.add(sequence[i-1].vector);
 
       var courseDir = (Math.random() - 0.5) * 100;
-      courseDir = this.courseCorrect(sequence[i].vector, courseDir);
+      this.courseCorrect(sequence[i]);
       this.rotate(sequence[i].vector, courseDir);
     };
 
@@ -52,20 +52,23 @@ var Sanstream = {
 
   courseCorrect: function (coordinate, courseDir) {
 
-    if(coordinate.x < 0){
-      return -courseDir;
+    if(coordinate.position.x < 0){
+      coordinate.vector.x = -coordinate.vector.x;
+      this.donorVector.x = -this.donorVector.x;
     }
-    else if (coordinate.x > this.clientDims.width) {
-      return -courseDir;
+    else if (coordinate.position.x > this.clientDims.width) {
+      coordinate.vector.x = -coordinate.vector.x;
+      this.donorVector.x = -this.donorVector.x;
     }
 
-    if(coordinate.y < 0){
-      return -courseDir;
+    if(coordinate.position.y < 0){
+      coordinate.vector.y = -coordinate.vector.y;
+      this.donorVector.y = -this.donorVector.y;
     }
-    else if(coordinate.y > this.clientDims.height) {
-      return -courseDir;
+    else if(coordinate.position.y > this.clientDims.height) {
+      coordinate.vector.y = -coordinate.vector.y;
+      this.donorVector.y = -this.donorVector.y;
     }
-    return courseDir;
   },
 
   rotate: function (vector, degrees) {
@@ -92,7 +95,7 @@ var Sanstream = {
     var cirleGroup = this.svg.append('g').classed('guiding-circles', true);
     cirleGroup.selectAll('circle').data(coorSequence).enter()
       .append('circle')
-      .attr('r', this.segmentLength)
+      .attr('r', this.segmentLength *2)
       .attr('cx', function (coor) {
           return coor.position.x;
       })
