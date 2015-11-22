@@ -78,8 +78,8 @@ Stream.prototype.startAnimation = function () {
   var interval = window.setInterval(function () {
     d3.select(self.paths[0][self.ticker]).classed('glow', true);
     self.ticker += 1;
-    if(self.ticker > self.paths.length) {
-      interval.stop();
+    if(self.ticker > self.paths[0].length) {
+      window.clearInterval(interval);
     }
   }, 700);
 };
