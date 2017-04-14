@@ -5,7 +5,7 @@
 $colour-reddish-orange:     #ff6300;
 $colour-orange:             #FF7600;
 $colour-yellow-orange:      #FF9800;
-$colour-black:              #000000;
+$colour-transparent:              rgba(0,0,0,0);
 
 /**
  * Styles:
@@ -14,24 +14,18 @@ body {
     height: 100%;
     width: 100%;
     position: absolute;
+    background-color: black;
 
-  figure#the-sanstream > svg {
+  svg {
     height: 100%;
     width: 100%;
     position: absolute;
     z-index: 1;
-    background-color: black;
-
-    g.guiding-circles {
-      circle {
-        //fill: rgba(0, 182, 255, 0.7);
-      }
-    }
 
     @mixin defineColour($colourName,$colour){
       g.#{$colourName} > path.glow {
         animation-name: glow#{$colourName};
-        animation-duration: 25s;
+        animation-duration: 0.7s;
         //animation-iteration-count: 10;
         animation-direction:normal;
         animation-timing-function: ease-out;
@@ -40,18 +34,18 @@ body {
 
       @keyframes glow#{$colourName}{
         0% {
-          stroke: $colour-black;
+          stroke: $colour-transparent;
         }
-        20% {
-          stroke: $colour;
+        10% {
+            stroke: $colour;
         }
 
-        50% {
+        70% {
           stroke: $colour;
         }
 
         100% {
-          stroke: $colour-black;
+          stroke: $colour-transparent;
         }
       }
     }
